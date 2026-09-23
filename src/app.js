@@ -7,6 +7,7 @@ import conversationRoutes from './routes/conversation.route.js'
 import userRoutes from './routes/user.route.js'
 import messageRoutes from './routes/message.route.js'
 const app=express()
+app.use(express.json());
 
 // app.use(cors(config.security.cors))
 const allowedOrigins = [
@@ -24,7 +25,6 @@ app.use(cors({
 }));
 // app.options("/*any",cors(config.security.cors))
 
-app.use(express.json());
 app.use(cookieParser());
 
 app.get('/api/helth',(req,res)=>{
