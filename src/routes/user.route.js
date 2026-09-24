@@ -6,6 +6,6 @@ const router=express.Router();
 
 
 router.get('/',protect,findUserByUsername);
+router.get('/me',protect,getMe)
 router.get('/:userId',protect,getUser);
-router.get('/me',protect, getMe)
 export default router;

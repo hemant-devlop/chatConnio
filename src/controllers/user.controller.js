@@ -52,7 +52,7 @@ export const getMe =async (req, res) => {
 export const findUserByUsername = async (req, res) => {
     const userQuery = req.query;
     if (!userQuery.username) {
-        res.status(400).json({
+      return  res.status(400).json({
             success: false,
             message: "username required"
         })
@@ -65,7 +65,7 @@ export const findUserByUsername = async (req, res) => {
         message:"user not found"
     })
     }
-    res.status(200).json({
+   return res.status(200).json({
         success: true,
         data: userData
     })

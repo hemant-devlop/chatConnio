@@ -12,7 +12,7 @@ export const refresh =async (req, res) => {
         const refreshToken = req.cookies.refreshToken;
 
         if (!refreshToken) {
-            res.status(401).json({
+          return  res.status(401).json({
                 success: false,
                 message: 'Refresh token required'
             })
@@ -21,7 +21,7 @@ export const refresh =async (req, res) => {
         const decoded = jwtService.verifyRefreshToken(refreshToken)
 
         if (decoded.type !== 'refresh') {
-            res.status(401).json({
+           return res.status(401).json({
                 success: false,
                 message: 'Invalid Refresh token'
             })
@@ -54,7 +54,7 @@ export const login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            res.status(400).json({
+           return res.status(400).json({
                 success: false,
                 message: 'email password required'
             })
@@ -110,7 +110,7 @@ export const login = async (req, res) => {
     } catch (error) {
         console.error("login error:", error)
 
-        res.status(500).json({
+       return res.status(500).json({
             success: false,
             message: 'internal server error'
         })
@@ -159,7 +159,7 @@ export const register=async (req, res) => {
     } catch (error) {
         console.error("signup error:", error)
 
-        res.status(500).json({
+       return res.status(500).json({
             success: false,
             message: 'internal server error'
         })
@@ -177,7 +177,7 @@ export const logout=async (req, res) => {
     } catch (error) {
         console.error("Logout Error", error)
 
-        res.status(500).json({
+       return res.status(500).json({
             success: false,
             message: 'internal server error'
         })

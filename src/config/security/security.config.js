@@ -6,6 +6,8 @@ export const createSecurityConfig = (env) => {
         trustProxy: false,
         cors: {
             origin: env.CLIENT_URL,
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+            allowedHeaders: ['Content-Type', 'Authorization'],
             credentials: true,
         }
 
