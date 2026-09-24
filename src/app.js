@@ -9,20 +9,20 @@ import messageRoutes from './routes/message.route.js'
 const app=express()
 app.use(express.json());
 
-// app.use(cors(config.security.cors))
-const allowedOrigins = [
-  "http://localhost:3000"                    
-];
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+app.use(cors(config.security.cors))
+// const allowedOrigins = [
+//   "http://localhost:3000"                    
+// ];
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// }));
 // app.options("/*any",cors(config.security.cors))
 
 app.use(cookieParser());
