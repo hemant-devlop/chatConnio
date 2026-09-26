@@ -6,6 +6,7 @@ import { hashService } from "../lib/utils/hash.service.js";
 import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
 import { sessionRepository } from "../repositories/session.repository.js";
+import { userRepository } from "../repositories/user.repository.js";
 
 export const refresh =async (req, res) => {
     try {
@@ -17,15 +18,32 @@ export const refresh =async (req, res) => {
                 message: 'Refresh token required'
             })
         }
-
-        const decoded = jwtService.verifyRefreshToken(refreshToken)
-
-        if (decoded.type !== 'refresh') {
+          if (decoded.type !== 'refresh') {
            return res.status(401).json({
                 success: false,
                 message: 'Invalid Refresh token'
             })
         }
+
+        const decoded = jwtService.verifyRefreshToken(refreshToken)
+        
+        const user=await userRepository.findById(decoded.sub);
+
+         if (!user) {
+           return res.status(401).json({
+                success: false,
+                message: 'Invalid Refresh token'
+            })
+        }
+        const session=await sessionRepository.findById(decoded.sid)
+
+        if (session.revokedAt || session.expiresAt<new Date()) {
+           return res.status(401).json({
+                success: false,
+                message: 'anauthenticated'
+            })
+        }
+      
 
         const newAccessToken = jwtService.generateAccessToken({ userId: decoded.sub, role: 'user', sessionId: decoded.sid })
         const newRefreshToken = jwtService.generateRefreshToken({ userId: decoded.sub, sessionId: decoded.sid })

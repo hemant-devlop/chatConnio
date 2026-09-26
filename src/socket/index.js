@@ -38,10 +38,9 @@ export function initializeSocket(server){
             // console.log(`user ${userId} connected`)
             // console.log(`socketId ${socket.id} connected`)
 
-            socket.join(`user:${user}`);
-
+            socket.join(`user:${user.id}`);
             socket.on('disconnect',(reason)=>{
-                console.log(`user ${user} disconnected`)
+                console.log(`user ${user.id} disconnected`)
 
                 console.log("reason",reason)
             })
