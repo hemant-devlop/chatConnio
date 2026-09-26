@@ -8,65 +8,90 @@ import { User } from "../models/user.model.js";
 import { sessionRepository } from "../repositories/session.repository.js";
 import { userRepository } from "../repositories/user.repository.js";
 
-export const refresh =async (req, res) => {
-    try {
-        const refreshToken = req.cookies.refreshToken;
+export const refresh = async (req, res) => {
+   try {
+      const refreshToken = req.cookies.refreshToken;
 
-        if (!refreshToken) {
-          return  res.status(401).json({
-                success: false,
-                message: 'Refresh token required'
-            })
-        }
-          if (decoded.type !== 'refresh') {
-           return res.status(401).json({
-                success: false,
-                message: 'Invalid Refresh token'
-            })
-        }
-
-        const decoded = jwtService.verifyRefreshToken(refreshToken)
-        
-        const user=await userRepository.findById(decoded.sub);
-
-         if (!user) {
-           return res.status(401).json({
-                success: false,
-                message: 'Invalid Refresh token'
-            })
-        }
-        const session=await sessionRepository.findById(decoded.sid)
-
-        if (session.revokedAt || session.expiresAt<new Date()) {
-           return res.status(401).json({
-                success: false,
-                message: 'anauthenticated'
-            })
-        }
-      
-
-        const newAccessToken = jwtService.generateAccessToken({ userId: decoded.sub, role: 'user', sessionId: decoded.sid })
-        const newRefreshToken = jwtService.generateRefreshToken({ userId: decoded.sub, sessionId: decoded.sid })
-
-        // cookieServie.setAccessToken(res,newAccessToken)
-        cookieServie.setRefresehToken(res, newRefreshToken)
-
-        return res.status(200).json({   
-            success: true,
-            data: {
-                accessToken: newAccessToken
-            }
-        })
-
-    } catch (error) {
-        return res.status(401).json({
+      if (!refreshToken) {
+         return res.status(401).json({
             success: false,
-            error:error,
-            data:req.cookies,
-            message: 'invalid or expired refresh token'
-        });
-    }
-}
+            message: "Refresh token required",
+         });
+      }
+
+      // Verify token FIRST
+      const decoded = jwtService.verifyRefreshToken(refreshToken);
+
+      // Then validate token type
+      if (decoded.type !== "refresh") {
+         return res.status(401).json({
+            success: false,
+            message: "Invalid refresh token",
+         });
+      }
+
+      // Find user
+      const user = await userRepository.findById(decoded.sub);
+
+      if (!user) {
+         return res.status(401).json({
+            success: false,
+            message: "Invalid refresh token",
+         });
+      }
+
+      // Find session
+      const session = await sessionRepository.findById(decoded.sid);
+
+      if (
+         !session ||
+         session.revokedAt ||
+         session.expiresAt < new Date()
+      ) {
+         return res.status(401).json({
+            success: false,
+            message: "Unauthenticated",
+         });
+      }
+
+      // Generate new access token
+      const newAccessToken =
+         jwtService.generateAccessToken({
+            userId: decoded.sub,
+            role: user.role,
+            sessionId: decoded.sid,
+         });
+
+      // Generate new refresh token
+      const newRefreshToken =
+         jwtService.generateRefreshToken({
+            userId: decoded.sub,
+            sessionId: decoded.sid,
+         });
+
+      // Set rotated refresh token
+      cookieServie.setRefresehToken(
+         res,
+         newRefreshToken
+      );
+
+      return res.status(200).json({
+         success: true,
+         data: {
+            accessToken: newAccessToken,
+         },
+      });
+
+   } catch (error) {
+
+      console.error("REFRESH ERROR:", error);
+
+      return res.status(401).json({
+         success: false,
+         message: "Invalid or expired refresh token",
+      });
+   }
+};
 
 
 export const login = async (req, res) => {
