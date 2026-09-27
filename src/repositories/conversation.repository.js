@@ -15,14 +15,13 @@ class ConversationRepository {
         }).populate("lastMessage","content sender createdAt").populate("participants")
        // .populate('message','content')
     }
-    async create(userId, OtherUserId,conversationId) {
+    async create(userId, OtherUserId) {
         return Conversation.create({
-            _id:conversationId,
-            participants: [userId, OtherUserId],
+            participants: [userId, OtherUserId]
         })
     }
     async updateLastMessage(conversationId,lastMessage) {
-        return Conversation.findByIdAndUpdate(conversationId,{lastMessage:lastMessage},{new:true})
+        return Conversation.findByIdAndUpdate(conversationId,{lastMessage:lastMessage},{returnDocument:'after'})
     }
 }
 

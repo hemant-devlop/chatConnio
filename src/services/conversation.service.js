@@ -4,10 +4,9 @@ import { conversationRepository } from "../repositories/conversation.repository.
 class Conversation{
     async newConversation(userId,otherUserId){
          const conversationId = await conversationRepository.findByUsers(userId,otherUserId)
-         console.log(conversationId)
             if (!conversationId) {
-                const newConversationId = new mongoose.Types.ObjectId()
-                return newConversationId
+                const newConversation=await conversationRepository.create(userId,otherUserId)
+                return newConversation._id;
             }else{
                 return conversationId._id;
             }
