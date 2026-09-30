@@ -22,11 +22,9 @@ export function initializeSocket(server) {
             socket.join(conversationId)
         })
 
-        socket.on("send-message", async ({ text, conversationId }) => {
-            const newMessage = await messageRepository.create(conversationId, user.id, text)
+        socket.on("send-message", async ({ text, conversationId,clientMessageId }) => {
+            const newMessage = await messageRepository.create(conversationId, user.id, text,clientMessageId)
             const updatedConversation = await conversationRepository.updateLastMessage(conversationId, newMessage._id)
-            console.log(updatedConversation)
-
             io.to(conversationId).emit("new-message", { conversationId, newMessage })
         })
         // console.log(`user ${userId} connected`)
@@ -35,7 +33,6 @@ export function initializeSocket(server) {
         socket.join(`user:${user.id}`);
         socket.on('disconnect', (reason) => {
             console.log(`user ${user.id} disconnected`)
-
             console.log("reason", reason)
         })
     })

@@ -21,6 +21,10 @@ const messageSchema = new mongoose.Schema(
       trim: true,
       maxlength: 5000,
     },
+    clientMessageId: {
+      type: String,
+      required:true
+    },
 
     messageType: {
       type: String,

@@ -78,7 +78,6 @@ export const refresh = async (req, res) => {
             refreshTokenHash,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
-        console.log(updateRefresh)
         // Set rotated refresh token
         cookieServie.setRefresehToken(
             res,

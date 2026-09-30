@@ -25,7 +25,7 @@ class SessionRepository {
     async updateRefreshToken({ sessionId, refreshTokenHash, jti, expiresAt }) {
         return Session.findByIdAndUpdate(sessionId,
             { refreshTokenHash, jti, expiresAt, lastActivityAt: new Date(), }, {
-            new: true,
+            returnDocument: 'after',
         }
         );
     }

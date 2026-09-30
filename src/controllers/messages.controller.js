@@ -7,7 +7,6 @@ export const getMessages=async (req,res)=>{
 
     //find messages
     const messaages=await messageRepository.findByConversation(id)
-console.log(messaages)
   return  res.status(200).json({
         success:true,
         data:messaages
