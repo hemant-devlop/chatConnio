@@ -9,6 +9,12 @@ class ConversationRepository {
     async findById(conversationId) {
         return Conversation.findById(conversationId).lean();
     }
+    async findByIdAndParticipants(conversationId,participantId) {
+        return Conversation.findOne({
+            _id:conversationId,
+            participants:participantId
+        }).lean();
+    }
     async findAll(userId) {
         return Conversation.find({
             participants: { $all: [userId], $size: 2 },
