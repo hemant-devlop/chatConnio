@@ -7,7 +7,7 @@ class ConversationRepository {
         });
     }
     async findById(conversationId) {
-        return Conversation.findById(conversationId).lean();
+        return Conversation.findById(conversationId).populate("participants").lean();
     }
     async findByIdAndParticipants(conversationId,participantId) {
         return Conversation.findOne({

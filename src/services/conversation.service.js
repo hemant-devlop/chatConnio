@@ -15,5 +15,9 @@ class Conversation{
             const conversations=await conversationRepository.findAll(userId)
             return conversations??[]
     }
+    async conversationUser(conversationId){
+            const conversations=await conversationRepository.findById(conversationId)
+            return conversations;
+    }
 }
 export const conversationService=new Conversation();

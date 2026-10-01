@@ -7,7 +7,11 @@ export const getMessages = async (req, res) => {
         const { id } = req.params//conversationid
         //find conversation
         if (!mongoose.isValidObjectId(id)) {
-            return res.status(400).json({ error: 'Invalid ID format.' });
+             return res.status(400).json({
+            success: false,
+            message:"invalid id",
+            data: null
+        })
         }
         //find messages
         const messaages = await messageRepository.findByConversation(id)
