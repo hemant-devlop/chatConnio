@@ -200,7 +200,7 @@ export const register = async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message:"user register successfull",
+            message: "user registeration done",
             data: {
                 user: {
                     id: newUser._id,
@@ -225,8 +225,11 @@ export const logout = async (req, res) => {
         const { _id } = req.session;
 
         const session = await sessionRepository.revoke(_id)
+
+        cookieServie.clearRefresehToken(res);
         return res.status(200).json({
             success: true,
+            message:"user logged out successfully",
             data: null
         })
     } catch (error) {
