@@ -146,7 +146,7 @@ export const login = async (req, res) => {
 
         const accessToken = jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
-        cookieServie.setRefresehToken(res, refreshToken);
+        cookieServie.setRefresehToken(res,refreshToken);
 
         return res.status(200).json({
             success: true,

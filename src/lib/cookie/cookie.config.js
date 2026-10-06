@@ -1,13 +1,13 @@
 import config from "../../config/index.js";
 const cookieConfig = {
     accessToken: {
-        httpOnly: config.cookie.secure,
+        httpOnly: config.cookie.httpOnly,
         secure: config.cookie.secure,
         sameSite: config.cookie.sameSite,
         maxAge: config.cookie.accessMaxAge
     },
     refreshToken: {
-        httpOnly: config.cookie.secure,
+        httpOnly: config.cookie.httpOnly,
         secure: config.cookie.secure,
         sameSite: config.cookie.sameSite,
         path:config.cookie.path,
