@@ -6,6 +6,8 @@ CLIENT_URL:z.url(),
 
 DB_URI:z.string().trim().min(1),
 
+REDIS_URL:z.string().trim().min(1),
+
 DB_NAME:z.string().trim().min(1),
 DB_RETRY_LIMIT:z.coerce.number().int().min(1),
 DB_RETRY_DELAY:z.coerce.number().int().min(1000),

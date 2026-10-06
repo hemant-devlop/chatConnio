@@ -7,6 +7,7 @@ import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
 import { sessionRepository } from "../repositories/session.repository.js";
 import { userRepository } from "../repositories/user.repository.js";
+import redis from "../lib/radis/radis.js";
 
 export const refresh = async (req, res) => {
     try {
@@ -146,7 +147,7 @@ export const login = async (req, res) => {
 
         const accessToken = jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
-        cookieServie.setRefresehToken(res,refreshToken);
+        cookieServie.setRefresehToken(res, refreshToken);
 
         return res.status(200).json({
             success: true,
@@ -173,13 +174,21 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
     try {
+
         const { name, email, password, username } = req.body;
         if (!email || !password || !name || !username) {
             return res.status(401).json({
                 success: false,
                 message: 'all field required'
             })
+        } else {
+            return res.status(201).json({
+                success: true,
+                message: 'not allowed to signup'
+            })
         }
+
+
         const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
 
         if (user) {
@@ -229,7 +238,7 @@ export const logout = async (req, res) => {
         cookieServie.clearRefresehToken(res);
         return res.status(200).json({
             success: true,
-            message:"user logged out successfully",
+            message: "user logged out successfully",
             data: null
         })
     } catch (error) {

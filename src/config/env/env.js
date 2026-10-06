@@ -1,6 +1,5 @@
 import dotenv from 'dotenv'
 import { envSchmea } from './envSchema.js';
-import { object } from 'zod';
 
 dotenv.config()
 

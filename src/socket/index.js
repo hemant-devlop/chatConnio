@@ -6,6 +6,7 @@ import { conversationRepository } from '../repositories/conversation.repository.
 import ApiError from '../error/errorHelper.js';
 import { messageRepository } from '../repositories/message.repository.js';
 import mongoose from 'mongoose';
+import redis from '../lib/radis/radis.js';
 
 
 export function initializeSocket(server) {
@@ -15,9 +16,36 @@ export function initializeSocket(server) {
 
     io.use(socketAuth);
 
-    io.on('connection', (socket) => {
+    io.on('connection', async (socket) => {
         // console.log("socket",socket.user)
         const user = socket.user
+        socket.on("typing:start", async ({ conversationId }) => {
+            const conversation = await conversationRepository.findByIdAndParticipants(conversationId, user.id)
+            if (!conversation) {
+                return socket.emit("socket-error", {
+                    message: "you are not member of this conversation"
+                })
+            }
+            socket.to(conversationId).emit("typing:start", { userId: user.id })
+        })
+
+        socket.on("user:offline", async ({ userId }) => {
+            await redis.srem("online:users", userId);
+
+            //  const allOnlineUser = await redis.smembers("online:users")
+            // const onlineUserExceptme = allOnlineUser.filter(userId => userId !== user.id)
+            // io.emit("user:online", { onlineUser: onlineUserExceptme })
+        })
+
+        socket.on("typing:stop", async ({ conversationId }) => {
+            const conversation = await conversationRepository.findByIdAndParticipants(conversationId, user.id)
+            if (!conversation) {
+                return socket.emit("socket-error", {
+                    message: "you are not member of this conversation"
+                })
+            }
+            socket.to(conversationId).emit("typing:stop", { userId: user.id })
+        })
 
         socket.on("join-conversation", async ({ conversationId }) => {
             if (!mongoose.isValidObjectId(conversationId)) {
@@ -25,6 +53,12 @@ export function initializeSocket(server) {
                     message: "room:not a valid conversation id"
                 })
             }
+            await redis.sadd("online:users", user.id)
+
+            const allOnlineUser = await redis.smembers("online:users")
+            const onlineUserExceptme = allOnlineUser.filter(userId => userId !== user.id)
+            socket.emit("user:online", { conversationId, onlineUser: onlineUserExceptme })
+
             const conversation = await conversationRepository.findByIdAndParticipants(conversationId, user.id)
             if (!conversation) {
                 return socket.emit("socket-error", {
@@ -44,11 +78,11 @@ export function initializeSocket(server) {
             const updatedConversation = await conversationRepository.updateLastMessage(conversationId, newMessage._id)
             io.to(conversationId).emit("new-message", { conversationId, newMessage })
         })
-        // console.log(`user ${userId} connected`)
-        // console.log(`socketId ${socket.id} connected`)
 
         socket.join(`user:${user.id}`);
-        socket.on('disconnect', (reason) => {
+        socket.on('disconnect', async (reason) => {
+            await redis.srem("online:users", user.id)
+
             console.log(`user ${user.id} disconnected`)
             console.log("reason", reason)
         })
