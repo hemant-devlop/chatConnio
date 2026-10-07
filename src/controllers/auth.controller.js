@@ -83,7 +83,7 @@ export const refresh = async (req, res) => {
             res,
             newRefreshToken
         );
-        console.log(refreshToken, newRefreshToken)
+        // console.log(refreshToken, newRefreshToken)
         return res.status(200).json({
             success: true,
             data: {

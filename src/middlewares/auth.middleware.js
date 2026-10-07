@@ -13,7 +13,7 @@ const protect = async (req, res, next) => {
             error: 'null'
         })
     }
-    const payload = jwtService.verifyAccessToken(accessToken);
+    const payload =await jwtService.verifyAccessToken(accessToken);
 
     const user = await userRepository.findById(payload.sub)
     if (!user) {
