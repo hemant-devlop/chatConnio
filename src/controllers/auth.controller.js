@@ -135,7 +135,7 @@ export const login = async (req, res) => {
         const sessionId = new mongoose.Types.ObjectId()
 
         const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId })
-        console.log("reff", refreshToken)
+    
         const decode = await jwtService.decodeToken(refreshToken);
         const refreshTokenHash = await hashService.hashSha256(refreshToken);
         const session = await Session.create({
@@ -153,7 +153,7 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                ref: refreshToken,
+                refreshes:{token:"helo",refToken: refreshToken},
                 accessToken,
                 user: {
                     id: user._id,
