@@ -6,10 +6,10 @@ class CookieServie {
     // clearAccessToken(res) {
     //     res.clearCookie('accessToken',cookieConfig.accessToken)
     // }
-    setRefresehToken(res, token) {
+   async setRefresehToken(res, token) {
         res.cookie('refreshToken', token, cookieConfig.refreshToken)
     }
-    clearRefresehToken(res) {
+   async clearRefresehToken(res) {
         res.clearCookie('refreshToken', cookieConfig.refreshToken)
     }
 }

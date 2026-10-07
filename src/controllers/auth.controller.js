@@ -7,7 +7,6 @@ import { Session } from "../models/session.model.js";
 import { User } from "../models/user.model.js";
 import { sessionRepository } from "../repositories/session.repository.js";
 import { userRepository } from "../repositories/user.repository.js";
-import redis from "../lib/radis/radis.js";
 
 export const refresh = async (req, res) => {
     try {
@@ -21,7 +20,7 @@ export const refresh = async (req, res) => {
         }
 
         // Verify token FIRST
-        const decoded = jwtService.verifyRefreshToken(refreshToken);
+        const decoded =await jwtService.verifyRefreshToken(refreshToken);
 
         // Then validate token type
         if (decoded.type !== "refresh") {
@@ -57,7 +56,7 @@ export const refresh = async (req, res) => {
 
         // Generate new access token
         const newAccessToken =
-            jwtService.generateAccessToken({
+           await jwtService.generateAccessToken({
                 userId: decoded.sub,
                 role: user.role,
                 sessionId: decoded.sid,
@@ -65,12 +64,12 @@ export const refresh = async (req, res) => {
 
         // Generate new refresh token
         const newRefreshToken =
-            jwtService.generateRefreshToken({
+           await jwtService.generateRefreshToken({
                 userId: decoded.sub,
                 sessionId: decoded.sid,
             });
-        const refreshTokenHash = hashService.hashSha256(newRefreshToken);
-        const decode = jwtService.decodeToken(newRefreshToken);
+        const refreshTokenHash =await hashService.hashSha256(newRefreshToken);
+        const decode = await jwtService.decodeToken(newRefreshToken);
 
         const updateRefresh = await sessionRepository.updateRefreshToken({
             sessionId: decode.sid,
@@ -80,14 +79,15 @@ export const refresh = async (req, res) => {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
         // Set rotated refresh token
-        cookieServie.setRefresehToken(
+       await cookieServie.setRefresehToken(
             res,
             newRefreshToken
         );
-
+        console.log(refreshToken, newRefreshToken)
         return res.status(200).json({
             success: true,
             data: {
+                newRefreshToken,
                 accessToken: newAccessToken,
             },
         });
@@ -134,9 +134,10 @@ export const login = async (req, res) => {
 
         const sessionId = new mongoose.Types.ObjectId()
 
-        const refreshToken = jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId })
-        const decode = jwtService.decodeToken(refreshToken);
-        const refreshTokenHash = hashService.hashSha256(refreshToken);
+        const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId })
+        console.log("reff", refreshToken)
+        const decode = await jwtService.decodeToken(refreshToken);
+        const refreshTokenHash = await hashService.hashSha256(refreshToken);
         const session = await Session.create({
             _id: sessionId,
             jti: decode.jti,
@@ -145,13 +146,14 @@ export const login = async (req, res) => {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         });
 
-        const accessToken = jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
+        const accessToken = await jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
-        cookieServie.setRefresehToken(res, refreshToken);
+        await cookieServie.setRefresehToken(res, refreshToken);
 
         return res.status(200).json({
             success: true,
             data: {
+                ref: refreshToken,
                 accessToken,
                 user: {
                     id: user._id,
