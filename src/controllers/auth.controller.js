@@ -10,7 +10,7 @@ import { userRepository } from "../repositories/user.repository.js";
 
 export const refresh = async (req, res) => {
     try {
-        const refreshToken = req.cookies.refreshToken;
+        const refreshToken = req.cookies?.refreshToken;
 
         if (!refreshToken) {
             return res.status(401).json({
@@ -156,7 +156,7 @@ export const login = async (req, res) => {
 
         const accessToken = await jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
-        await cookieServie.setRefresehToken(res, refreshToken);
+        await cookieServie.setRefresehToken(res,refreshToken);
 
         return res.status(200).json({
             success: true,
