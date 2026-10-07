@@ -168,6 +168,7 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
+                resp:req?.cookies,
                 accessToken,
                 user: {
                     id: user._id,
