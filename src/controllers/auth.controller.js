@@ -20,7 +20,7 @@ export const refresh = async (req, res) => {
         }
 
         // Verify token FIRST
-        const decoded =await jwtService.verifyRefreshToken(refreshToken);
+        const decoded = await jwtService.verifyRefreshToken(refreshToken);
 
         // Then validate token type
         if (decoded.type !== "refresh") {
@@ -56,7 +56,7 @@ export const refresh = async (req, res) => {
 
         // Generate new access token
         const newAccessToken =
-           await jwtService.generateAccessToken({
+            await jwtService.generateAccessToken({
                 userId: decoded.sub,
                 role: user.role,
                 sessionId: decoded.sid,
@@ -64,11 +64,11 @@ export const refresh = async (req, res) => {
 
         // Generate new refresh token
         const newRefreshToken =
-           await jwtService.generateRefreshToken({
+            await jwtService.generateRefreshToken({
                 userId: decoded.sub,
                 sessionId: decoded.sid,
             });
-        const refreshTokenHash =await hashService.hashSha256(newRefreshToken);
+        const refreshTokenHash = await hashService.hashSha256(newRefreshToken);
         const decode = await jwtService.decodeToken(newRefreshToken);
 
         const updateRefresh = await sessionRepository.updateRefreshToken({
@@ -79,7 +79,7 @@ export const refresh = async (req, res) => {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
         // Set rotated refresh token
-       await cookieServie.setRefresehToken(
+        await cookieServie.setRefresehToken(
             res,
             newRefreshToken
         );
@@ -134,8 +134,16 @@ export const login = async (req, res) => {
 
         const sessionId = new mongoose.Types.ObjectId()
 
-        const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId })
-    
+        const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId:sessionId.toString() })
+        if (!refreshToken) {
+           return res.status(401).json({
+            success: false,
+            message:'token not active',
+            data: {
+                refreshes: { token: "helo", refToken: refreshToken },
+              }
+        })
+        }
         const decode = await jwtService.decodeToken(refreshToken);
         const refreshTokenHash = await hashService.hashSha256(refreshToken);
         const session = await Session.create({
@@ -153,7 +161,7 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                refreshes:{token:"helo",refToken: refreshToken},
+                refreshes: { token: "helo", refToken: refreshToken },
                 accessToken,
                 user: {
                     id: user._id,
