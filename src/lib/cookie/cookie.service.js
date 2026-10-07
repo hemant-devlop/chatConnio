@@ -11,7 +11,7 @@ class CookieServie {
         return res.cookie('refreshToken', token, {
             httpOnly: true,              // Blocks JavaScript (protects against XSS)
             secure: true,        // Requires HTTPS in production
-            sameSite: none, // 'none' for cross-site with credentials, 'lax' for same-site
+            sameSite: 'none', // 'none' for cross-site with credentials, 'lax' for same-site
             path: '/api/auth/refresh',   // Restrict cookie transmission to the refresh endpoint only
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
         });
@@ -20,7 +20,7 @@ class CookieServie {
         return res.clearCookie('refreshToken',{
             httpOnly: true,              // Blocks JavaScript (protects against XSS)
             secure: true,        // Requires HTTPS in production
-            sameSite: none, // 'none' for cross-site with credentials, 'lax' for same-site
+            sameSite: 'none', // 'none' for cross-site with credentials, 'lax' for same-site
             path: '/api/auth/refresh',   // Restrict cookie transmission to the refresh endpoint only
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
         })
