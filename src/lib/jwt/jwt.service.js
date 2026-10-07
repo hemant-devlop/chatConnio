@@ -9,7 +9,7 @@ class JwtService {
             algorithm: "HS256",
             issuer: 'my-api-service',
         }
-        return jwt.sign({ sub: userId, sid: sessionId, jti: crypto.randomUUID(), role, type: 'access' }, config.auth.accessTokenSecret, options)
+        return jwt.sign({ sub: userId, sid: sessionId, jti:crypto.randomUUID(), role, type: 'access' }, config.auth.accessTokenSecret, options)
     }
 
     async generateRefreshToken({userId,sessionId}){
