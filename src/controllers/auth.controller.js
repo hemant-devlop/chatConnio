@@ -157,14 +157,14 @@ export const login = async (req, res) => {
         const accessToken = await jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
         // await cookieServie.setRefresehToken(res,refreshToken);
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,               
-            secure: true,        
-            sameSite: 'none',  
-            path: '/',   
-            maxAge: 7 * 24 * 60 * 60 * 1000  
-        })
-
+        // res.cookie('refreshToken', refreshToken, {
+        //     httpOnly: true,               
+        //     secure: true,        
+        //     sameSite: 'none',  
+        //     path: '/',   
+        //     maxAge: 7 * 24 * 60 * 60 * 1000  
+        // })
+   await res.cookie('refreshToken', refreshToken, { httpOnly: true,secure:true, sameSite: 'none', maxAge: 1 * 24 * 60 * 60 * 1000  });
         return res.status(200).json({
             success: true,
             data: {
