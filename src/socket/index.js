@@ -29,12 +29,13 @@ export function initializeSocket(server) {
             socket.to(conversationId).emit("typing:start", { userId: user.id })
         })
 
-        socket.on("user:offline", async ({ userId }) => {
+        socket.on("user:offline", async ({ userId, conversationId }) => {
             await redis.srem("online:users", userId);
-
-            //  const allOnlineUser = await redis.smembers("online:users")
+            socket.join(conversationId)
+            const allOnlineUser = await redis.smembers("online:users")
             // const onlineUserExceptme = allOnlineUser.filter(userId => userId !== user.id)
             // io.emit("user:online", { onlineUser: onlineUserExceptme })
+            socket.to(conversationId).emit("user:offline", { onlineUser:allOnlineUser, conversationId })
         })
 
         socket.on("typing:stop", async ({ conversationId }) => {

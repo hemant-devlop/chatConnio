@@ -87,7 +87,6 @@ export const refresh = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                newRefreshToken,
                 accessToken: newAccessToken,
             },
         });
@@ -168,7 +167,6 @@ export const login = async (req, res) => {
         return res.status(200).json({
             success: true,
             data: {
-                resp:req?.cookies,
                 accessToken,
                 user: {
                     id: user._id,
@@ -201,7 +199,7 @@ export const register = async (req, res) => {
         } else {
             return res.status(201).json({
                 success: true,
-                message: 'not allowed to signup'
+                message: 'not allowed to signup due to private issue'
             })
         }
 
