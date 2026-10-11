@@ -6,13 +6,16 @@ const cookieConfig = {
         sameSite: config.cookie.sameSite,
         maxAge: config.cookie.accessMaxAge
     },
-    refreshToken: {
-        httpOnly: config.cookie.httpOnly,
-        secure: config.cookie.secure,
-        sameSite: config.cookie.sameSite,
-        path:config.cookie.path,
-        maxAge:config.cookie.refreshMaxAge
-    }
+    refreshToken: { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 1 * 24 * 60 * 60 * 1000 },
+    // refreshToken: {
+    //     httpOnly: config.cookie.httpOnly,
+    //     secure: config.cookie.secure,
+    //     sameSite: config.cookie.sameSite,
+    //     path: config.cookie.path,
+    //     maxAge: config.cookie.refreshMaxAge
+    // },
+
+
 }
 
 export default cookieConfig;

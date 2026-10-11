@@ -79,13 +79,11 @@ export const refresh = async (req, res) => {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
         // Set rotated refresh token
-        // await cookieServie.setRefresehToken(
-        //     res,
-        //     newRefreshToken
-        // );
-        await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 1 * 24 * 60 * 60 * 1000 });
+        await cookieServie.setRefresehToken(
+            res,
+            newRefreshToken
+        );
         
-        // console.log(refreshToken, newRefreshToken)
         return res.status(200).json({
             success: true,
             data: {
@@ -149,15 +147,8 @@ export const login = async (req, res) => {
 
         const accessToken = await jwtService.generateAccessToken({ userId: user._id.toString(), sessionId, role: user.role })
 
-        // await cookieServie.setRefresehToken(res,refreshToken);
-        // res.cookie('refreshToken', refreshToken, {
-        //     httpOnly: true,               
-        //     secure: true,        
-        //     sameSite: 'none',  
-        //     path: '/',   
-        //     maxAge: 7 * 24 * 60 * 60 * 1000  
-        // })
-        await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 1 * 24 * 60 * 60 * 1000 });
+        await cookieServie.setRefresehToken(res,refreshToken);
+
         return res.status(200).json({
             success: true,
             data: {
