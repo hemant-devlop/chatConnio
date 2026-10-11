@@ -79,10 +79,12 @@ export const refresh = async (req, res) => {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         })
         // Set rotated refresh token
-        await cookieServie.setRefresehToken(
-            res,
-            newRefreshToken
-        );
+        // await cookieServie.setRefresehToken(
+        //     res,
+        //     newRefreshToken
+        // );
+        await res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 1 * 24 * 60 * 60 * 1000 });
+        
         // console.log(refreshToken, newRefreshToken)
         return res.status(200).json({
             success: true,
@@ -133,16 +135,8 @@ export const login = async (req, res) => {
 
         const sessionId = new mongoose.Types.ObjectId()
 
-        const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId:sessionId.toString() })
-        if (!refreshToken) {
-           return res.status(401).json({
-            success: false,
-            message:'token not active',
-            data: {
-                refreshes: { token: "helo", refToken: refreshToken },
-              }
-        })
-        }
+        const refreshToken = await jwtService.generateRefreshToken({ userId: user._id.toString(), sessionId: sessionId.toString() })
+
         const decode = await jwtService.decodeToken(refreshToken);
         const refreshTokenHash = await hashService.hashSha256(refreshToken);
         const session = await Session.create({
@@ -163,7 +157,7 @@ export const login = async (req, res) => {
         //     path: '/',   
         //     maxAge: 7 * 24 * 60 * 60 * 1000  
         // })
-   await res.cookie('refreshToken', refreshToken, { httpOnly: true,secure:true, sameSite: 'none', maxAge: 1 * 24 * 60 * 60 * 1000  });
+        await res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'lax', path: '/', maxAge: 1 * 24 * 60 * 60 * 1000 });
         return res.status(200).json({
             success: true,
             data: {
